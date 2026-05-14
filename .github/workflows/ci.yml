@@ -1,0 +1,41 @@
+name: Projet 6 workflow
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    env:
+      ANGULAR_DIR: "Application_Angular/"
+      JAVA_DIR: "Application_Java/"
+      
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'Application_Angular/package-lock.json'
+          
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Lancement du script Python des tests
+        run: python run-tests.py $ANGULAR_DIR $JAVA_DIR
+
+      - name: Rapport de tests
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rapports-de-tests
+          path: "**/test-results/*.xml"
