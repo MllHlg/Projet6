@@ -18,6 +18,10 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'Application_Angular/package-lock.json'
           
+      - name: Setup Angular
+        run: npm ci
+        working-directory: Application_Angular/
+          
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
