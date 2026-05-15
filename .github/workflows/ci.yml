@@ -1,12 +1,13 @@
 name: Projet 6 workflow
 on: [push, pull_request]
+
+env:
+  ANGULAR_DIR: "Application_Angular/"
+  JAVA_DIR: "Application_Java/"
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    
-    env:
-      ANGULAR_DIR: "Application_Angular/"
-      JAVA_DIR: "Application_Java/"
       
     steps:
       - uses: actions/checkout@v4
@@ -43,3 +44,33 @@ jobs:
         with:
           name: rapports-de-tests
           path: "**/test-results/*.xml"
+
+  build:
+    runs-on: ubuntu-latest
+
+    needs: test
+
+    permissions:
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to Docker
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Docker build Angular image
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/app-angular:${{ github.ref_name }}-${{ github.sha }} Application_Angular/
+
+      - name: Docker push Angular image
+        run: docker push ghcr.io/${{ github.repository_owner }}/app-angular:${{ github.ref_name }}-${{ github.sha }}
+
+      - name: Docker build Java image
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/app-java:${{ github.ref_name }}-${{ github.sha }} Application_Java/
+
+      - name: Docker push Java image
+        run: docker push ghcr.io/${{ github.repository_owner }}/app-java:${{ github.ref_name }}-${{ github.sha }}
