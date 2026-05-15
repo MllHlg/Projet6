@@ -21,7 +21,7 @@ def angular_tests():
 
     xml_files = glob.glob("reports/**/*.xml", recursive=True)
     for f in xml_files:
-        shutil.copy(f, os.path.join("test-results", os.path.basename(f)))
+        shutil.copy(f, os.path.join("../test-results", os.path.basename(f)))
 
     return process.returncode
 
@@ -36,7 +36,7 @@ def java_tests():
 
     source_path = os.path.join("build", "test-results", "test", "*.xml")
     for f in glob.glob(source_path):
-        shutil.copy(f, os.path.join("test-results", os.path.basename(f)))
+        shutil.copy(f, os.path.join("../test-results", os.path.basename(f)))
 
     return process.returncode
 
