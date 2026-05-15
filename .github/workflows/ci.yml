@@ -5,6 +5,7 @@ env:
   ANGULAR_DIR: "Application_Angular/"
   JAVA_DIR: "Application_Java/"
   OWNER_LC: ""
+  BRANCH: ""
 
 jobs:
   test:
@@ -64,17 +65,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Lower case username
-        run: echo "OWNER_LC=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+      - name: Preparation des noms
+        run: |
+          echo "OWNER_LC=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          echo "BRANCH=$(echo ${{ github.ref_name }} | tr '/' '-')" >> $GITHUB_ENV
       
       - name: Docker build Angular image
-        run: docker build -t ghcr.io/${{ env.OWNER_LC }}/app-angular:${{ github.ref_name }}-${{ github.sha }} Application_Angular/
+        run: docker build -t ghcr.io/${{ env.OWNER_LC }}/app-angular:${{ env.BRANCH }}-${{ github.sha }} Application_Angular/
 
       - name: Docker push Angular image
-        run: docker push ghcr.io/${{ env.OWNER_LC }}/app-angular:${{ github.ref_name }}-${{ github.sha }}
+        run: docker push ghcr.io/${{ env.OWNER_LC }}/app-angular:${{ env.BRANCH }}-${{ github.sha }}
 
       - name: Docker build Java image
-        run: docker build -t ghcr.io/${{ env.OWNER_LC }}/app-java:${{ github.ref_name }}-${{ github.sha }} Application_Java/
+        run: docker build -t ghcr.io/${{ env.OWNER_LC }}/app-java:${{ env.BRANCH }}-${{ github.sha }} Application_Java/
 
       - name: Docker push Java image
-        run: docker push ghcr.io/${{ env.OWNER_LC }}/app-java:${{ github.ref_name }}-${{ github.sha }}
+        run: docker push ghcr.io/${{ env.OWNER_LC }}/app-java:${{ env.BRANCH }}-${{ github.sha }}
