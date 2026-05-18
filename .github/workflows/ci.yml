@@ -119,6 +119,8 @@ jobs:
           echo "BRANCH=$(echo ${{ github.ref_name }} | tr '/' '-')" >> $GITHUB_ENV
 
       - name: Lancement de semantic-release
-        run: npx semantic-release
+        run: |
+          npm install @semantic-release/changelog @semantic-release/exec @semantic-release/git
+          npx semantic-release
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
