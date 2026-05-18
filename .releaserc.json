@@ -1,0 +1,30 @@
+{
+  "branches": ["main"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    
+    [
+      "@semantic-release/exec",
+      {
+        "prepareCmd": "sed -i \"s/version = .*/version = '${nextRelease.version}'/g\" Application_Java/build.gradle && npm --prefix Application_Angular --no-git-tag-version version ${nextRelease.version} && docker build -t ghcr.io/$OWNER_LC/app-angular:${nextRelease.version} Application_Angular/ && docker build -t ghcr.io/$OWNER_LC/app-java:${nextRelease.version} Application_Java/",
+        "publishCmd": "docker push ghcr.io/$OWNER_LC/app-angular:${nextRelease.version} && docker push ghcr.io/$OWNER_LC/app-java:${nextRelease.version}"
+      }
+    ],
+
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "CHANGELOG.md", 
+          "Application_Angular/package.json", 
+          "Application_Angular/package-lock.json", 
+          "Application_Java/build.gradle"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    "@semantic-release/github"
+  ]
+}
